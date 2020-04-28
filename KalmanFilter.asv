@@ -13,7 +13,7 @@ classdef KalmanFilter
         
         y; % vector of measurements
         X_ext; % extrapolation of state vector; F*X for linear model; F(X) for non-linear model
-        y_ext; % extrapolation of measurements; H*X_ext for linear model; S(X_ext) for non-linear model
+        y_ext; % extrapolation of measurements; F*X for linear model; F(X) for non-linear model
         
         posts; % Reference points positions
     end
