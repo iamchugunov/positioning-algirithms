@@ -26,22 +26,28 @@ classdef KalmanFilter
     end
     
     methods
-        
+            
         function obj = Init(obj,X_initial)
            obj.X = X_initial;
            obj.D_x = eye(length(X_initial));
         end
         
-%         function obj = Init(obj,X_initial)
-%            obj.X = X_initial;
-%            obj.D_x = eye(length(X_initial));
-%         end
+        function obj = OneStep(obj)
+           D_x_ext = obj.F* obj.D_x * obj.F' + obj.G * obj.D_ksi * obj.G';
+           obj.M = obj.H * D_x_ext * obj.H' + obj.D_n; 
+           obj.K = D_x_ext * obj.H' * inv(obj.M);  
+           obj.D_x = D_x_ext - obj.K * obj.H * D_x_ext;
+           obj.res = obj.y - obj.y_ext;
+%            obj.L = exp(-0.5*obj.discr'*obj.M^(-1)*obj.discr)/(2*pi*det(obj.M))^(4/2); % вычисление правдоподобия фильтра
+           obj.X = obj.X_ext + obj.K*obj.res; % оценка вектора состояния
+        end
         
     end
     
     methods (Abstract)
         
-        obj = OneStep(obj)
+        obj = MakeMatrix(obj)
+        obj = Update(obj)
         
     end
     
