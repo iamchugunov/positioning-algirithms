@@ -1,4 +1,4 @@
-classdef ToFFilter < KalmanFilter
+classdef TDoAFilter < KalmanFilter
     % 2D navigation with known altitude
     % State Vector is X = (x; Vx; y; Vy);
     properties
@@ -9,7 +9,7 @@ classdef ToFFilter < KalmanFilter
     
     methods
         
-        function obj = ToFFilter(X_initial, config) % constructor
+        function obj = TDoAFilter(X_initial, config) % constructor
             obj = obj.Init(X_initial);
             obj.posts = config.posts;
             obj.std_n = config.sigma_t*config.c;
@@ -37,16 +37,20 @@ classdef ToFFilter < KalmanFilter
             x  = obj.X_ext(1);
             y  = obj.X_ext(3);
             
+            for i = 1:length(obj.posts)
+               R(i) =  norm(obj.posts(:,i) - [x;y;obj.h]);
+            end
+            
             for i = 1:N
-                obj.y_ext(index(i),1) = norm(obj.posts(:,index(i)) - [x;y;obj.h]);
+                obj.y_ext(index(i),1) = R(i+1) - R(1);
             end
             
             k = 0;
             for i = 1:N
                 k = k + 1;
-                obj.H(k,1) = (x - obj.posts(1,index(i)))/(obj.y_ext(index(i)));
+                obj.H(k,1) = (x - obj.posts(1,i+1))/R(i+1) - (x - obj.posts(1,1))/R(1);
                 obj.H(k,2) = 0;
-                obj.H(k,3) = (y - obj.posts(2,index(i)))/(obj.y_ext(index(i)));
+                obj.H(k,3) = (y - obj.posts(2,i+1))/R(i+1) - (y - obj.posts(2,1))/R(1);
                 obj.H(k,4) = 0;
             end
             
@@ -61,4 +65,6 @@ classdef ToFFilter < KalmanFilter
     end
     
 end
+
+
 
