@@ -33,7 +33,7 @@ classdef KalmanFilter
         end
         
         function obj = OneStep(obj)
-           D_x_ext = obj.F* obj.D_x * obj.F' + obj.G * obj.D_ksi * obj.G';
+           D_x_ext = obj.F * obj.D_x * obj.F' + obj.G * obj.D_ksi * obj.G';
            obj.M = obj.H * D_x_ext * obj.H' + obj.D_n; 
            obj.K = D_x_ext * obj.H' * inv(obj.M);  
            obj.D_x = D_x_ext - obj.K * obj.H * D_x_ext;
